@@ -1,6 +1,6 @@
 
 from pyqtree import Index
-import tqdm
+from tqdm.auto import tqdm
 import math
 import random
 import pandas as pd
@@ -17,7 +17,7 @@ def adjust_labels(rectangle_data, speed=None, adjust_by_size=True, radius_scale=
         rectangle_data (DataFrame): A DataFrame containing the rectangle data.
         speed (float, optional): The speed at which the labels are adjusted. Defaults to None, then it uses 1/2th of the width of the mean rectangle.
         adjust_by_size (bool, optional): Whether to adjust the labels based on the size of the rectangles. Defaults to True.
-        radius_scale (float, optional): The scale factor for the repulsion radius. Defaults to 1.1.
+            radius_scale (float, optional): The scale factor for the repulsion radius. Defaults to 1.1.
         max_iterations (int, optional): The maximum number of iterations to perform. Defaults to 100.
         plot_progress (bool, optional): Whether to plot the progress of label adjustment. Defaults to False.
         margin_percentage (int, optional): The percentage of margin to add around the rectangles. Defaults to 0. 
@@ -43,7 +43,7 @@ def adjust_labels(rectangle_data, speed=None, adjust_by_size=True, radius_scale=
         optimization_process = []
 
     # Perform label adjustment iterations
-    for _ in tqdm.tqdm(range(max_iterations)):
+    for _ in tqdm(range(max_iterations)):
         rectangle_data['x_center'] = rectangle_data['x'] + rectangle_data['width'] / 2
         rectangle_data['y_center'] = rectangle_data['y'] + rectangle_data['height'] / 2
 
@@ -136,8 +136,26 @@ def repulse(rect1_idx, rect2_idx, rectangle_data, speed, adjust_by_size, radius_
             rectangle_data.loc[rect2_idx, 'y'] += dy
             collision = True
 
-    # Your remaining collision detection logic and adjustments here
-    # Ensure to modify rect2 using rectangle_data.loc[rect2_idx, ...] as above
+
+
+    # This code is sus...
+    up_differential = rect1['y'] + rect1['height'] - rect2['y']
+    down_differential = rect2['y'] + rect2['height'] - rect1['y']
+    label_collision_x_left = rect2['x'] + rect2['width'] - rect1['x']
+    label_collision_x_right = rect1['x'] + rect1['width'] - rect2['x']
+
+    if up_differential > 0 and down_differential > 0 and label_collision_x_left > 0 and label_collision_x_right > 0:
+        if up_differential > down_differential:
+            rectangle_data.at[rect2_idx, 'y'] -= 0.02 * rect1['height'] * (0.8 + 0.4 * random.random()) * speed
+        else:
+            rectangle_data.at[rect2_idx, 'y'] += 0.02 * rect1['height'] * (0.8 + 0.4 * random.random()) * speed
+
+        if label_collision_x_left > label_collision_x_right:
+            rectangle_data.at[rect2_idx, 'x'] += 0.01 * (rect1['height'] * 2) * (0.8 + 0.4 * random.random()) * speed
+        else:
+            rectangle_data.at[rect2_idx, 'x'] -= 0.01 * (rect1['height'] * 2) * (0.8 + 0.4 * random.random()) * speed
+
+        collision = True
 
     return collision
 
