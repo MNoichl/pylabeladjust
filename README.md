@@ -2,7 +2,7 @@
 
 `pylabeladjust` is a port of Gephi's Label-Adjust algorithm to python. It makes labels in matplotlib-plots not overlap by carefully pushing them apart, as illustrated by this video:
 
-<img src="https://github.com/MNoichl/pylabeladjust/blob/main/images/layout_process_texts.gif" width="672" />
+<img src="https://raw.githubusercontent.com/MNoichl/pylabeladjust/main/images/layout_process_texts.gif" width="672" />
 
 Pylabeladjust uses `pyqtree` in the background to be efficient. The setup of the `pylabeladjust`-plotting code takes inspiration from `adjust_text`. this package
 

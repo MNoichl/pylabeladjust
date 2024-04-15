@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pylabeladjust"
-version = "0.1.1"
-description = "`pylabeladjust` is a port of Gephi's Label-Adjust algorithm to python. It makes labels in matplotlib-plots not overlap by carefully p"
+version = "0.1.1.6"
+description = "`pylabeladjust` is a port of Gephi's Label-Adjust algorithm to python."
 authors = ["MNoichl <noichlmax@hotmail.co.uk>"]
 license = "MIT"
 readme = "README.md"
