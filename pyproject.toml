@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pylabeladjust"
-version = "0.1.1.7"
+version = "0.1.1.8"
 description = "`pylabeladjust` is a port of Gephi's Label-Adjust algorithm to python."
 authors = ["MNoichl <noichlmax@hotmail.co.uk>"]
 license = "MIT"
