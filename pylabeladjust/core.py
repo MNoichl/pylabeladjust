@@ -9,7 +9,7 @@ import matplotlib.patches as patches
 
 
 def adjust_labels(rectangle_data, speed=None, adjust_by_size=True, radius_scale=1.1, 
-                  max_iterations=100, plot_progress=False, margin_percentage=0, return_optimization_process=False):
+                  max_iterations=100, plot_progress=False, margin=0, margin_type='percentage', return_optimization_process=False):
     """
     Adjusts the labels of rectangles in the given rectangle_data DataFrame to avoid overlapping.
 
@@ -20,7 +20,8 @@ def adjust_labels(rectangle_data, speed=None, adjust_by_size=True, radius_scale=
             radius_scale (float, optional): The scale factor for the repulsion radius. Defaults to 1.1.
         max_iterations (int, optional): The maximum number of iterations to perform. Defaults to 100.
         plot_progress (bool, optional): Whether to plot the progress of label adjustment. Defaults to False.
-        margin_percentage (int, optional): The percentage of margin to add around the rectangles. Defaults to 0. 
+        margin (int, optional): The the size of the margin to add around the rectangles. Either a percentage, or an absolute value. Defaults to 0. 
+        margin_type (str, optional): How to add margins. Options are 'percentage' and 'absolute'. 
 
     Returns:
         DataFrame: The adjusted rectangle_data DataFrame.
@@ -33,7 +34,12 @@ def adjust_labels(rectangle_data, speed=None, adjust_by_size=True, radius_scale=
         speed = 0.5 * (rectangle_data['width'].mean() )
         
     # Calculate and apply margin
-    margin_width = rectangle_data['width'] * margin_percentage / 100
+    if margin_type == 'percentage':
+        margin_width = rectangle_data['width'] * margin / 100
+    elif margin_type == 'absolute':
+        margin_width = margin
+        
+        
     rectangle_data['x'] -= margin_width
     rectangle_data['y'] -= margin_width
     rectangle_data['width'] += 2 * margin_width
@@ -94,7 +100,7 @@ def adjust_labels(rectangle_data, speed=None, adjust_by_size=True, radius_scale=
     rectangle_data['y'] += margin_width
     rectangle_data['width'] -= 2 * margin_width
     rectangle_data['height'] -= 2 * margin_width
-
+    rectangle_data = rectangle_data[['x', 'y', 'width', 'height']]
     if return_optimization_process:
         return rectangle_data, optimization_process 
     else:
@@ -167,7 +173,7 @@ def repulse(rect1_idx, rect2_idx, rectangle_data, speed, adjust_by_size, radius_
                   
 
 def adjust_texts(texts, speed=None, adjust_by_size=True, radius_scale=1.1, 
-                  max_iterations=200, plot_progress=True, margin_percentage=10, return_optimization_process=False):
+                  max_iterations=200, plot_progress=True, margin=0, margin_type='percentage', return_optimization_process=False):
     """
     Adjusts the positions of texts on a plot to avoid overlapping.
 
@@ -190,18 +196,50 @@ def adjust_texts(texts, speed=None, adjust_by_size=True, radius_scale=1.1,
 
     for text in texts:
         bbox = text.get_window_extent(renderer).transformed(ax.transData.inverted())
-        bbox_list.append([bbox.x0, bbox.y0, bbox.x1-bbox.x0, bbox.y1-bbox.y0 ])
+        bbox_list.append([bbox.x0, bbox.y0, bbox.width, bbox.height])
+        
     rectangle_df = pd.DataFrame(bbox_list, columns=['x', 'y', 'width', 'height'])
+    
     
     if return_optimization_process:
         rectangles_adjusted, optimization_process = adjust_labels(rectangle_df, speed=speed, adjust_by_size=adjust_by_size, radius_scale=radius_scale, max_iterations=max_iterations,
-                                        margin_percentage=margin_percentage,return_optimization_process=True)
+                                        margin=margin, margin_type=margin_type,return_optimization_process=True)
     else:
         rectangles_adjusted = adjust_labels(rectangle_df, speed=speed, adjust_by_size=adjust_by_size, radius_scale=radius_scale, max_iterations=max_iterations,
-                                        margin_percentage=margin_percentage,return_optimization_process=False)
-        
+                                        margin=margin, margin_type=margin_type,return_optimization_process=False)
+
+    new_xs, new_ys = [], []
+    print('Resetting positions to accord with alignment')
     for ix, row in rectangles_adjusted.iterrows():
-        texts[ix].set_position((row['x'], row['y']))
+        text = texts[ix]
+        ha = text.get_ha()
+        va = text.get_va()
+        print(ha, va)
+        # Reset positions based on ha and va
+        if ha == 'center':
+            new_x = row['x'] + row['width'] / 2
+        elif ha == 'right':
+            new_x = row['x'] + row['width']
+        else:
+            new_x = row['x']
+
+        if va == 'center':
+            new_y = row['y'] + row['height'] / 2
+        elif va == 'top':
+            new_y = row['y'] + row['height']
+        else:
+            new_y = row['y']
+
+        text.set_position((new_x, new_y))
+
+        new_xs.append(new_x)
+        new_ys.append(new_y)
+        
+    rectangles_adjusted['x'] = new_xs
+    rectangles_adjusted['y'] = new_ys
+
+    
+
     if return_optimization_process:
         return rectangles_adjusted, optimization_process
     else:

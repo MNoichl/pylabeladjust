@@ -51,10 +51,11 @@ Here's what the parameters mean:
 * `radius_scale` (float, optional): The scale factor for the radius used in the adjustment process. Defaults to 1.1.
 * `max_iterations` (int, optional): The maximum number of iterations for the adjustment process. Defaults to 200. Increase if your layout still has overlaps after running the adjustment. This can usually be increased liberally because once there is little overlap anymore, the remaining iterations are very fast.
 * `plot_progress` (bool, optional): Whether to print out plots of the progress of the adjustment process. Defaults to False, and is mostly useful for debugging.
-* `margin_percentage` (int, optional): The percentage of margin to be added around the adjusted texts. Calculated from the width of rectangles. Defaults to 10.
+* `margin` (int, optional): The the size of the margin to add around the rectangles. Either a percentage, or an absolute value. Defaults to 0. 
+* `margin_type` (str, optional): How to add margins. Options are 'percentage' and 'absolute'. 'percentage' sets the margin as a percentage (given in `margin`) of the rectangles size. 'absolute`sets all margins to the same absolute value.
 * `return_optimization_process` (bool, optional): Whether to return the optimization process, a list of dataframes of all the positions the texts went through in the optimization process. Defaults to False.
 
-The function edits your `texts` object in place, so you can just resume plotting. It also will return a dataframe of the new positions, and if `return_optimization_process` is set to true, a list of dataframes of the intermediate steps.
+The function edits your `texts` object in place, so you can just resume plotting. Note that it will set your alignment (ha, va) It also will return a dataframe of the new positions, and if `return_optimization_process` is set to true, a list of dataframes of the intermediate steps.
 
 
 
@@ -73,8 +74,8 @@ The parameters of this function are:
 * `radius_scale` (float, optional): The scale factor for the radius used in the adjustment process. Defaults to 1.1.
 * `max_iterations` (int, optional): The maximum number of iterations for the adjustment process. Defaults to 200. Increase if your layout still has overlaps after running the adjustment. This can usually be increased liberally because once there is little overlap anymore, the remaining iterations are very fast.
 * `plot_progress` (bool, optional): Whether to print out plots of the progress of the adjustment process. Defaults to False, and is mostly useful for debugging.
-* `margin_percentage` (int, optional): The percentage of margin to be added around the adjusted texts. Calculated from the width of rectangles. Defaults to 10.
-* `return_optimization_process` (bool, optional): Whether to return the optimization process, a list of dataframes of all the positions the texts went through in the optimization process. Defaults to False.
+* `margin` (int, optional): The the size of the margin to add around the rectangles. Either a percentage, or an absolute value. Defaults to 10. 
+* `margin_type` (str, optional): How to add margins. Options are 'percentage' and 'absolute'. 'percentage' sets the margin as a percentage (given in `margin`) of the rectangles size. 'absolute`sets all margins to the same absolute value.* `return_optimization_process` (bool, optional): Whether to return the optimization process, a list of dataframes of all the positions the texts went through in the optimization process. Defaults to False.
 
 
 <img src="https://raw.githubusercontent.com/MNoichl/pylabeladjust/main/images/layout_process_rectangles.gif" width="672" />
