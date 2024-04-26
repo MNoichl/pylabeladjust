@@ -100,7 +100,7 @@ def adjust_labels(rectangle_data, speed=None, adjust_by_size=True, radius_scale=
     rectangle_data['y'] += margin_width
     rectangle_data['width'] -= 2 * margin_width
     rectangle_data['height'] -= 2 * margin_width
-    rectangle_data = rectangle_data[['x', 'y', 'width', 'height']]
+    # rectangle_data = rectangle_data[['x', 'y', 'width', 'height']]
     if return_optimization_process:
         return rectangle_data, optimization_process 
     else:
@@ -169,11 +169,7 @@ def repulse(rect1_idx, rect2_idx, rectangle_data, speed, adjust_by_size, radius_
 
 
 
-                  
-                  
-
-def adjust_texts(texts, speed=None, adjust_by_size=True, radius_scale=1.1, 
-                  max_iterations=200, plot_progress=True, margin=0, margin_type='percentage', return_optimization_process=False):
+def adjust_texts(texts, speed=None, adjust_by_size=True, radius_scale=1.1, max_iterations=200, plot_progress=True, margin=0, margin_type='percentage', return_optimization_process=False):
     """
     Adjusts the positions of texts on a plot to avoid overlapping.
 
@@ -214,7 +210,6 @@ def adjust_texts(texts, speed=None, adjust_by_size=True, radius_scale=1.1,
         text = texts[ix]
         ha = text.get_ha()
         va = text.get_va()
-        print(ha, va)
         # Reset positions based on ha and va
         if ha == 'center':
             new_x = row['x'] + row['width'] / 2
